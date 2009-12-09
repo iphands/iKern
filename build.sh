@@ -28,4 +28,5 @@ dd if=/dev/zero of=./pad2 bs=1 count=$new_size
 cat floppy.img.tmp pad2 > floppy.img
 echo -e "done\n\n"
 
-qemu-kvm -fda ./floppy.img
+# use qemu to test floppy.img
+qemu -fda ./floppy.img
