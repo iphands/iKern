@@ -36,8 +36,11 @@ void kmain( void* mbd, unsigned int magic )
   while (1)
     {
       change_term_color(0x07);
+      2 * 4 *2 +4 +2;
       change_term_color(0x1f);
+      2 * 4 *2 +4 +2;
       change_term_color(0x2a);
+      2 * 4 *2 +4 +2;
     }
 
   //unsigned char *videoram = (unsigned char *) 0xb8000;
