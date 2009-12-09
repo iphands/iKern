@@ -24,9 +24,6 @@ void kmain( void* mbd, unsigned int magic )
   /* Write your kernel here. */
   flush_video(' ');
   
-  printk("Hello World", 0);
-  printk("Hello World", 0);  
-  
   push_line("Hello World");
   push_line("This is a test");
   push_line("Hello World");
@@ -37,16 +34,15 @@ void kmain( void* mbd, unsigned int magic )
 
 void push_line(char * line)
 {
-
-  for(int i = 0; i < 25; i++)
+  unsigned char *videoram = (unsigned char *) 0xb8000;
+  for(int i = 0; i <= 25; i++)
     {
-      for(int j = 0; j < 80; j++)
+      for(int j = 0; j < 160; j++)
 	{
-	  
+	  videoram[(i * 160) + j] = videoram[((i + 1) * 160) + j];
 	}
     }
 
-  //write_buff();
   printk(line, (80 * 24) * 2);
 }
 
@@ -65,8 +61,18 @@ void flush_video(char c)
 
 void printk(char * my_string, unsigned short int start_i)
 {
-  unsigned short int i, str_count_i = 0;
-  unsigned char *videoram = (unsigned char *) 0xb8000 + start_i;
+  unsigned short int str_count_i = 0;
+  unsigned char *videoram = (unsigned char *) 0xb8000;
+  
+  /*
+    for(int i = 1; i < 80; i++)
+    {
+    videoram[i + start_i] = ' ';
+    videoram[i + start_i + 1] = 0x07;
+    }
+  */
+
+  unsigned short int i = start_i;
   while((my_string[str_count_i] != '\0') && (str_count_i < 80))
     {
       videoram[i] = my_string[str_count_i];
