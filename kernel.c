@@ -24,10 +24,14 @@ void kmain( void* mbd, unsigned int magic )
   /* Write your kernel here. */
   flush_video(' ');
   
+  
   push_line("Hello World");
   push_line("This is a test");
+  push_line("This is a test");
   push_line("Hello World");
-  
+
+  printk("iKern> ", (80 * 24) * 2);
+
   //unsigned char *videoram = (unsigned char *) 0xb8000;
   //videoram[1920 * 2] = 'A';
 }
@@ -35,7 +39,7 @@ void kmain( void* mbd, unsigned int magic )
 void push_line(char * line)
 {
   unsigned char *videoram = (unsigned char *) 0xb8000;
-  for(int i = 0; i <= 25; i++)
+  for(int i = 0; i <= 24; i++)
     {
       for(int j = 0; j < 160; j++)
 	{
@@ -43,7 +47,7 @@ void push_line(char * line)
 	}
     }
 
-  printk(line, (80 * 24) * 2);
+  printk(line, (80 * 23) * 2);
 }
 
 void flush_video(char c)
