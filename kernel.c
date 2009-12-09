@@ -1,7 +1,7 @@
 void printk(char * my_string, unsigned short int line);
-void push_line(char * line, unsigned char * vid_buffer);
-void flush_video(char c, unsigned char * vid_buffer);
-void write_buff(unsigned char * vid_buffer);
+void push_line(char * line);
+void flush_video(char c);
+//void write_buff(unsigned char * vid_buffer);
 
 void kmain( void* mbd, unsigned int magic )
 {
@@ -22,21 +22,20 @@ void kmain( void* mbd, unsigned int magic )
  
 
   /* Write your kernel here. */
-  unsigned char vid_buffer[2000];
-  flush_video(' ', vid_buffer);
+  flush_video(' ');
   
   printk("Hello World", 0);
   printk("Hello World", 0);  
   
-  push_line("Hello World", vid_buffer);
-  push_line("This is a test", vid_buffer);
-  push_line("Hello World", vid_buffer);
+  push_line("Hello World");
+  push_line("This is a test");
+  push_line("Hello World");
   
   //unsigned char *videoram = (unsigned char *) 0xb8000;
   //videoram[1920 * 2] = 'A';
 }
 
-void push_line(char * line, unsigned char * vid_buffer)
+void push_line(char * line)
 {
 
   for(int i = 0; i < 25; i++)
@@ -51,14 +50,7 @@ void push_line(char * line, unsigned char * vid_buffer)
   printk(line, (80 * 24) * 2);
 }
 
-void write_buff(unsigned char * vid_buffer)
-{
-  unsigned char * videoram = (unsigned char *) 0xb8000;
-  for(int i = 0; i < 4000; i++)
-    videoram[i] = vid_buffer[i];
-}
-
-void flush_video(char c, unsigned char * vid_buffer)
+void flush_video(char c)
 {
   unsigned short int i = 0;
   unsigned char * videoram = (unsigned char *) 0xb8000;
