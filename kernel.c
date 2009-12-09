@@ -1,6 +1,7 @@
 void printk(char * my_string, unsigned short int line);
 void push_line(char * line);
 void flush_video(char c);
+void change_term_color(unsigned char color);
 //void write_buff(unsigned char * vid_buffer);
 
 void kmain( void* mbd, unsigned int magic )
@@ -32,8 +33,27 @@ void kmain( void* mbd, unsigned int magic )
 
   printk("iKern> ", (80 * 24) * 2);
 
+  while (1)
+    {
+      change_term_color(0x07);
+      change_term_color(0x1f);
+      change_term_color(0x2a);
+    }
+
   //unsigned char *videoram = (unsigned char *) 0xb8000;
   //videoram[1920 * 2] = 'A';
+}
+
+void change_term_color(unsigned char color)
+{
+  unsigned char * videoram = (unsigned char *) 0xb8000;
+  for (int i = 0; i < 4000; i++)
+    {
+      i++;
+      videoram[i] = color;
+    }
+
+  return;
 }
 
 void push_line(char * line)
