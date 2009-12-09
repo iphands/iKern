@@ -22,8 +22,8 @@ void kmain( void* mbd, unsigned int magic )
   unsigned char *videoram = (unsigned char *) 0xb8000;
 
   //videoram[0] = 65; /* character 'A' */
-  //printk("Hello World\nHello World");
-  video_test();
+  printk("Hello World");
+  //video_test();
   videoram[1] = 0x07; /* forground, background color. */
  
   /* Write your kernel here. */
@@ -43,12 +43,16 @@ void video_test()
 
 void printk(char * my_string)
 {
-  unsigned short int i = 0;
+  unsigned short int i, str_count_i = 0;
   unsigned char *videoram = (unsigned char *) 0xb8000;
-  while(my_string[i] != '\0')
+  while(my_string[str_count_i] != '\0')
     {
-      videoram[0 + i] = my_string[i];
-      i++;
+      //videoram[i] = my_string[str_count_i];
+      videoram[i] = my_string[str_count_i];
+      videoram[i + 1] = 0x07;
+      
+      i += 2;
+      str_count_i++;
     }
   return;
 }
