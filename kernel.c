@@ -33,6 +33,7 @@ void kmain( void* mbd, unsigned int magic )
 
   printk("iKern> ", (80 * 24) * 2);
 
+  /*
   while (1)
     {
       change_term_color(0x07);
@@ -41,6 +42,21 @@ void kmain( void* mbd, unsigned int magic )
       2 * 4 *2 +4 +2;
       change_term_color(0x2a);
       2 * 4 *2 +4 +2;
+    }
+  */
+
+  while (1)
+    {
+      int j = 0;
+      unsigned char * videoram = (unsigned char *) 0xb8000;
+      unsigned char * ram = (unsigned char *) 0x00000 + 1920 + 1920;
+      for (int i = 0; i < (1920 * 2); i += 2)
+	{
+	  videoram[i] = ram[j];
+	  videoram[i + 1] = 0x07;
+
+	  j++;
+	}
     }
 
   //unsigned char *videoram = (unsigned char *) 0xb8000;
