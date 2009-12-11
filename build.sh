@@ -1,24 +1,38 @@
 #!/bin/bash
 
+function fail_exit {
+    if [ $? -ne 0 ]
+    then
+	exit 1
+    fi
+}
+
 echo -n "Building loader: "
 nasm -f elf -o loader.o loader.s
+fail_exit
 echo -e "done\n\n"
 
 echo -n "Building kernel: "
-gcc -std=gnu99 -o kernel.o -c kernel.c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs
+gcc -m32 -std=gnu99 -o kernel.o -c kernel.c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs
+fail_exit
 echo -e "done\n\n"
 
 echo -n "Building linker: "
-ld -T linker.ld -o kernel.bin loader.o kernel.o
+ld -T linker.ld -o kernel.bin loader.o kernel.o 2>/dev/null || ld -T linker.ld -o kernel.bin loader.o kernel.o -m elf_i386
+fail_exit
 echo -e "done\n\n"
 
 echo -n "Building floppy image: "
-# dd if=/dev/zero of=./pad bs=1 count=750
+dd if=/dev/zero of=./pad bs=1 count=750
+fail_exit
+
 cat  grub-stage/stage1 grub-stage/stage2 pad kernel.bin > floppy.img
+fail_exit
+
 #cat  grub-stage/stage1 grub-stage/stage2 pad > floppy.img
 size=`ls -l floppy.img | awk '{print $5}'`
-
 kern_size=`ls -l kernel.bin | awk '{print $5}'`
+
 echo "size: $kern_size"
 echo "offset: `expr $kern_size / 512`"
 
