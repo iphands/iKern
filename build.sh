@@ -23,7 +23,11 @@ fail_exit
 echo -e "done\n\n"
 
 echo -n "Building floppy image: "
-dd if=/dev/zero of=./pad bs=1 count=750
+if [ ! -f pad ]
+then
+    dd if=/dev/zero of=./pad bs=1 count=750
+fi
+
 fail_exit
 
 cat  grub-stage/stage1 grub-stage/stage2 pad kernel.bin > floppy.img
@@ -32,15 +36,14 @@ fail_exit
 #cat  grub-stage/stage1 grub-stage/stage2 pad > floppy.img
 size=`ls -l floppy.img | awk '{print $5}'`
 kern_size=`ls -l kernel.bin | awk '{print $5}'`
-
-echo "size: $kern_size"
-echo "offset: `expr $kern_size / 512`"
-
 new_size=`expr 1440000 - $size`
 #mv floppy.img floppy.img.tmp
 # dd if=/dev/zero of=./pad2 bs=1 count=$new_size
 #cat floppy.img.tmp pad2 > floppy.img
 echo -e "done\n\n"
+
+echo "size: $kern_size"
+echo "offset: `expr $kern_size / 512`"
 
 # use qemu to test floppy.img
 qemu -kernel kernel.bin
