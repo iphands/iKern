@@ -8,17 +8,24 @@ function fail_exit {
 }
 
 echo -n "Building loader: "
-nasm -f elf -o loader.o loader.s
+nasm -f aout -o loader.o loader.s
 fail_exit
 echo -e "done\n\n"
 
 echo -n "Building kernel: "
 gcc -m32 -std=gnu99 -o kernel.o -c kernel.c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs
+cd lib/
+for var in *.c
+do
+    gcc -m32 -std=gnu99 -o $var.o -c $var -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs
+    fail_exit
+done
+cd ..
 fail_exit
 echo -e "done\n\n"
 
-echo -n "Building linker: "
-ld -T linker.ld -o kernel.bin loader.o kernel.o 2>/dev/null || ld -T linker.ld -o kernel.bin loader.o kernel.o -m elf_i386
+echo -n "Linking: "
+ld -T linker.ld -o kernel.bin loader.o kernel.o lib/*.o 2>/dev/null || ld -T linker.ld -o kernel.bin loader.o kernel.o lib/*.o -m elf_i386
 fail_exit
 echo -e "done\n\n"
 
