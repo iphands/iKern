@@ -1,50 +1,19 @@
 #!/bin/bash
+set -e
 
-function fail_exit {
-    if [ $? -ne 0 ]
-    then
-	exit 1
-    fi
-}
+mkdir -p build
 
 echo -n "Building loader: "
-nasm -f elf -o loader.o loader.s
-fail_exit
-echo -e "done\n\n"
+nasm -f elf32 -o ./build/loader.o ./src/loader.s
+echo -e "done"
 
 echo -n "Building kernel: "
-gcc -m32 -std=gnu99 -o kernel.o -c kernel.c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs
-fail_exit
-echo -e "done\n\n"
+gcc -Os -Wall -Wextra -march=core2 -m32 -fno-pie -ffreestanding -c ./src/kernel.c -o ./build/kernel.o
+echo -e "done"
 
-echo -n "Building linker: "
-ld -T linker.ld -o kernel.bin loader.o kernel.o 2>/dev/null || ld -T linker.ld -o kernel.bin loader.o kernel.o -m elf_i386
-fail_exit
-echo -e "done\n\n"
+echo -n "Linking:         "
+ld -m elf_i386 -Ttext 0x1000 -o ./build/kernel.bin ./build/loader.o ./build/kernel.o
+echo -e "done"
 
-echo -n "Building floppy image: "
-if [ ! -f pad ]
-then
-    dd if=/dev/zero of=./pad bs=1 count=750
-fi
-
-fail_exit
-
-cat  grub-stage/stage1 grub-stage/stage2 pad kernel.bin > floppy.img
-fail_exit
-
-#cat  grub-stage/stage1 grub-stage/stage2 pad > floppy.img
-size=`ls -l floppy.img | awk '{print $5}'`
-kern_size=`ls -l kernel.bin | awk '{print $5}'`
-new_size=`expr 1440000 - $size`
-#mv floppy.img floppy.img.tmp
-# dd if=/dev/zero of=./pad2 bs=1 count=$new_size
-#cat floppy.img.tmp pad2 > floppy.img
-echo -e "done\n\n"
-
-echo "size: $kern_size"
-echo "offset: `expr $kern_size / 512`"
-
-# use qemu to test floppy.img
-qemu -kernel kernel.bin
-#qemu -fda ./floppy.img
+kern_size=`ls -l ./build/kernel.o | awk '{print $5}'`
+echo "Kernel size:     $kern_size"
