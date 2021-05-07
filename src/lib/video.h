@@ -75,3 +75,34 @@ void printk(char * my_string, unsigned short int start_i)
     }
   return;
 }
+
+void debug_line(const unsigned int memstart, const unsigned short int row)
+{
+
+  unsigned short int str_count_i = 0;
+  unsigned short int i = 4;
+  const int ROW_START =  row * (VIDEO_ROWS * 2);
+  unsigned char *videoram = (unsigned char *) VIDEO_RAM_START + ROW_START;
+  const char * my_string = (char *) ROW_START;
+
+  videoram[0] = row + 48;
+  videoram[2] = ':';
+
+  while(str_count_i < (VIDEO_ROWS - 2))
+    {
+      const char c = my_string[str_count_i + memstart];
+      if (c > 32 && c < 127) {
+        videoram[i] = c;
+      } else {
+        videoram[i] = '.';
+      }
+      // videoram[i + 1] = 0x07;
+
+      i += 2;
+      str_count_i++;
+    }
+
+
+  //videoram[(VIDEO_ROWS*2) - 2] = ']';
+  return;
+}

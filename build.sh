@@ -2,13 +2,14 @@
 set -e
 
 mkdir -p build
+rm -rf build/*o
 
 echo -n "Building loader: "
 nasm -f elf32 -o ./build/loader.o ./src/loader.s
 echo -e "done"
 
 echo -n "Building kernel: "
-gcc -Os -Wall -Wextra -march=core2 -m32 -fno-pie -ffreestanding -c ./src/kernel.c -o ./build/kernel.o
+gcc -Os -Wall -Wextra -Werror -march=core2 -m32 -fno-pie -ffreestanding -c ./src/kernel.c -o ./build/kernel.o
 echo -e "done"
 
 echo -n "Linking:         "
